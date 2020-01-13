@@ -7,11 +7,11 @@ let JSONtoTHREE = function () {
     let data;
     let config;
 
-    function readJSON(path){
-        data = require(path);
-        config = data.config;
-        window.map_anchor = config.anchor;
-        window.map_offset = config.offset;
+    function readJSON(data){
+
+        //config = data.config;
+        // window.map_anchor = config.anchor;
+        // window.map_offset = config.offset;
 
         //canvas.clearMap();
 

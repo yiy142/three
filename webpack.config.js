@@ -10,6 +10,7 @@ module.exports = {
 		filename: "index-bundle.js",//打包后输出文件的文件名
 		globalObject: 'this'
 	},
+	
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
 		compress: true,
@@ -17,6 +18,9 @@ module.exports = {
 		port: 3002
 	},
 	module: {
+
+		exprContextCritical: false,
+	
 		rules: [
 			{
 				test: /(\.jsx|\.js)$/,

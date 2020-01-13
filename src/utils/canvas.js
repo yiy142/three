@@ -21,7 +21,6 @@ var renderer;
 var gridHelper;
 let stats;
 let map = require('assets/tile.json');
-let plane;
 
 function init_three(SCREEN_WIDTH, SCREEN_HEIGHT) {
     // scene
@@ -50,7 +49,7 @@ function init_three(SCREEN_WIDTH, SCREEN_HEIGHT) {
         child.material.transparent = true;
         child.material.opacity = 0.2;
     })
-    plane = gridHelper;
+    let plane = gridHelper;
     scene.add(gridHelper);
     window.gridUp = (value = 0.3)=>{
         gridHelper.position.z += value;
@@ -121,21 +120,6 @@ function onWindowResize(){
 
     renderer.setSize( window.innerWidth, window.innerHeight );
 
-}
-
-
-function onMouseClick( event ) {
-	mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
-
-    raycaster.setFromCamera( mouse, camera );
-
-    var intersects = raycaster.intersectObjects( scene.children );
-
-    if ( intersects.length > 0 ) {
-        console.log("In click event:", intersects[0].point);
-        clickCoordinate = intersects[ 0 ].point;
-    }
 }
 
 

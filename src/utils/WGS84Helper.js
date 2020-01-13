@@ -10,7 +10,7 @@ import proj4 from "proj4"
 
 let WGS84HelperProjection = function(){
     const anchor_default = {x:120.646651,y:31.431136,z:0}
-    const offset_default = {x:-1148.3109125948208,y:-967.9750023651744,z:0}
+    const offset_default = {x:-1153.2257685419981,y:-972.5683789358485,z:0}
     let anchor = anchor_default;
     let offset = offset_default;
 
@@ -22,6 +22,7 @@ let WGS84HelperProjection = function(){
     {   
         
         let result = proj4(latlonProjWkt,tmercProjWkt,[llh.x,llh.y]);
+        console.log(result);
         let relative = {
             x:result[0] - offset.x,
             y:result[1] - offset.y,
