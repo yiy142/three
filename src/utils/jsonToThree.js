@@ -4,16 +4,11 @@ const THREE = require('three');
 
 let JSONtoTHREE = function () {
     let wgs84Helper =new WGS84Helper();
-    let data;
-    let config;
 
     function readJSON(data){
-
-        //config = data.config;
-        // window.map_anchor = config.anchor;
-        // window.map_offset = config.offset;
-
-        //canvas.clearMap();
+        let config = data.config;
+        window.map_anchor = config.anchor;
+        window.map_offset = config.offset;
 
         let lanes = data.lanes;
         let lots = data.lots;

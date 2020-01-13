@@ -20,7 +20,51 @@ var control;
 var renderer;
 var gridHelper;
 let stats;
-let map = require('assets/tile.json');
+let map = require("assets/tile.json");
+
+function dispose_obj(obj) {
+    if(obj.parent){
+        obj.parent.remove(obj);
+    }
+
+    if(obj.geometry){
+        obj.geometry.dispose();
+    }
+    if(obj.material){
+        obj.material.dispose();
+    }
+    obj = undefined;
+}
+
+function reload(newMap){
+    console.log("Reload!");
+    lots.forEach(obj => {
+        dispose_obj(obj);
+    })
+    lots.length = 0;
+
+    lanes.forEach(obj => {
+        dispose_obj(obj);
+    })
+    lanes.length = 0;
+
+    pillar.forEach(obj =>{
+        dispose_obj(obj);
+    })
+    pillar.length = 0;
+
+    jsonToThree.readJSON(newMap);
+    // var parent = document.getElementById("canvas");
+    // var child = document.getElementsByClassName("main-canvas");
+    // if (child.length > 0 ){
+    //     map = newMap;
+    //     parent.removeChild(child[0]);
+    //     initialize("canvas", window.innerWidth, window.innerHeight);
+    // }
+    // else{
+    //     console.warn("no map rendered yet!");
+    // }
+}
 
 function init_three(SCREEN_WIDTH, SCREEN_HEIGHT) {
     // scene
@@ -71,27 +115,22 @@ function init_three(SCREEN_WIDTH, SCREEN_HEIGHT) {
     control.target.set(0, 0, 1);
 }
 
-
-
 function initialize(canvasContainerId, SCREEN_WIDTH, SCREEN_HEIGHT) {
     let devicePixelRatio = window.devicePixelRatio || 1;
     init_three(SCREEN_WIDTH, SCREEN_HEIGHT);
     const interaction = new Interaction(renderer, scene, camera);
 
     stats = new Stats();
-    stats.dom.style.top = "25px";
-    stats.dom.style.left = "25px";
+    stats.dom.style.left = "";
+    stats.dom.style.top = "";
+    stats.dom.style.right = "25px";
+    stats.dom.style.bottom = "25px";
     stats.dom.className = "statsPanel"
     document.body.appendChild( stats.dom );
     
     function animate() {
-        // fixed update
         requestAnimationFrame(animate);
         stats.begin();
-        // texts.map(text =>{
-        //     text.lookAt(camera.position);
-        // });
-
     
         control.update();
         renderer.render(scene, camera);        
@@ -106,7 +145,6 @@ function initialize(canvasContainerId, SCREEN_WIDTH, SCREEN_HEIGHT) {
     renderer.domElement.height = SCREEN_HEIGHT * devicePixelRatio;
     canvasContainer.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
-    //window.addEventListener( 'click', onMouseClick, false );
     jsonToThree.readJSON(map);
     console.log("initialized!");
 }
@@ -122,22 +160,32 @@ function onWindowResize(){
 
 }
 
+function onClickEvent(event){
+    if (event.intersects.length > 0){
+        clickCoordinate = event.intersects[0].point;
+    }
 
+    //toggle
+    if (this.material.color.equals( new THREE.Color( 0xff0000 ))){
+        this.material.color.setHex( this.colorType );
 
+        var selectedInfo = scene.getObjectByName(this.childName);
+        scene.remove( selectedInfo );
+    }
+    else{
+        this.material.color.setHex(0xFF0000);
+        let vertice = new THREE.Vector3(0,0,0);
+        let infoText = gen_text(vertice,this.childName+"",vertice,"#FFFFFF");
+        infoText.name=this.childName;
 
-// function clearMap(){
-//     remove_objects(lots);
-//     remove_objects(lanes);
-//     remove_objects(pillar);
-// }
+        infoText.position.x = clickCoordinate.x;
+        infoText.position.y = clickCoordinate.y;
+        infoText.position.z = 10;
+        
+        scene.add(infoText);
+    }
 
-// function remove_objects(objects) {
-//     objects.forEach(obj => {
-//         dispose_obj(obj);
-//     })
-//     objects.length = 0;
-//     lots_store = new Object();
-// }
+}
 
 /********* DRAW Basic Meshes *********/
 let texts = [];
@@ -221,9 +269,6 @@ function gen_polygon(vertices, colorName, borderColor) {
     return poly;
 }
 
-
-
-
 /********* DRAW LINES *********/
 let lanes = []
 function draw_lanes(msg){
@@ -245,33 +290,6 @@ function draw_lanes(msg){
 
    lanes.push(obj);
    scene.add(obj);
-}
-
-function onClickEvent(event){
-    if (event.intersects.length > 0){
-        clickCoordinate = event.intersects[0].point;
-    }
-
-    //toggle
-    if (this.material.color.equals( new THREE.Color( 0xff0000 ))){
-        this.material.color.setHex( this.colorType );
-
-        var selectedInfo = scene.getObjectByName(this.childName);
-        scene.remove( selectedInfo );
-    }
-    else{
-        this.material.color.setHex(0xFF0000);
-        let vertice = new THREE.Vector3(0,0,0);
-        let infoText = gen_text(vertice,this.childName+"",vertice,"#FFFFFF");
-        infoText.name=this.childName;
-
-        infoText.position.x = clickCoordinate.x;
-        infoText.position.y = clickCoordinate.y;
-        infoText.position.z = 10;
-        
-        scene.add(infoText);
-    }
-
 }
 
 function gen_dashed_line(vertices,colorName,lineWidth = 2){
@@ -381,5 +399,6 @@ export {
     initialize,
     draw_lanes,
     draw_pillar,
-    draw_lots
+    draw_lots,
+    reload
 }

@@ -22,7 +22,6 @@ let WGS84HelperProjection = function(){
     {   
         
         let result = proj4(latlonProjWkt,tmercProjWkt,[llh.x,llh.y]);
-        console.log(result);
         let relative = {
             x:result[0] - offset.x,
             y:result[1] - offset.y,

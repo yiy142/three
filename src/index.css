@@ -11,3 +11,48 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.selector{
+  position: absolute;
+  width: 220px;
+  height: 60px;
+
+  top: 30px;
+  left: 20px;
+  z-index:1;
+  border:0;
+  background-color: #831d1d8f;
+
+}
+
+.custom-select-list {
+  height: 30px;
+  width: 140px;
+
+  margin-top: 10px; 
+  margin-bottom: 10px;
+  margin-left: 10px;
+
+  border-color: #1a1a1a;
+  outline: #000;
+  color:#1a1a1a;
+  font-size: 16px;
+ 
+  appearance: none;/*清除select下拉框默认样式*/    
+  -moz-appearance: none;    
+  -webkit-appearance: none;   
+  padding-right: 14px;/*为下拉小箭头留出一点位置，避免被文字覆盖*/    
+  background: url("assets/select-option.png") no-repeat scroll 97% transparent; /*自定义图片覆盖原有的下三角符号 */
+  background-size: 15px 20px;
+  background-color: rgb(228, 227, 227);
+}
+
+.select-btn{
+  padding: 6px;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.selector{
+  padding: 10px;
+}
