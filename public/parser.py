@@ -13,8 +13,8 @@ def cpos(a,b,c,d):
 def epos(a,b):
     return {
         "x" : float((a["x"] + b["x"])/2),
-        "y" : float((a["y"] + b["y"]/2)),
-        "z" : float((a["z"] + b["z"]/2))
+        "y" : float((a["y"] + b["y"])/2),
+        "z" : float((a["z"] + b["z"])/2)
     }
 
 doc = {}
@@ -43,8 +43,8 @@ for node in nodes:
     else:
         elev = node["tag"]["@v"]
     node_dict[node["@id"]] = {
-        "x" : float(node["@lat"]),
-        "y" : float(node["@lon"]),
+        "x" : float(node["@lon"]),
+        "y" : float(node["@lat"]),
         "z" : float(elev),
         "id": node["@id"]
     }
