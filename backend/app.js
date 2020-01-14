@@ -60,21 +60,6 @@ function serve() {
             response.send(err);
         });
 
-        // const xhr = new XMLHttpRequest();
-        // xhr.open('GET', url, true);
-        
-        // xhr.onreadystatechange = function() {
-        //     if (this.readyState == 4 && this.status == 200) {
-        //         var myArr = JSON.parse(this.responseText);
-        //         console.log(myArr);
-        //     }
-        //     console.log(this.readyState);
-        //     console.log(this.status);
-        // };
-
-        // xhr.send();
-        
-
     });
 
     

@@ -11,8 +11,8 @@ import proj4 from "proj4"
 let WGS84HelperProjection = function(){
     const anchor_default = {x:120.646651,y:31.431136,z:0}
     const offset_default = {x:-1153.2257685419981,y:-972.5683789358485,z:0}
-    let anchor = anchor_default;
-    let offset = offset_default;
+    let anchor = window.map_anchor||anchor_default;
+    let offset = window.map_offset||offset_default;
 
     let latlonProjWkt = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
     let tmercProjWkt = `+proj=tmerc +lat_0=${anchor.y} +lon_0=${anchor.x} +axis=enu +k=1 +x_0=0 +y_0=0 +datum=WGS84 +no_defs +geoidgrids=egm96_15.gtx`;

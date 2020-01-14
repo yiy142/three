@@ -14,15 +14,37 @@ code {
 
 .selector{
   position: absolute;
-  width: 220px;
-  height: 60px;
-
-  top: 30px;
-  left: 20px;
   z-index:1;
+  height: auto;
+  margin: 15px;
+  width: 225px;
   border:0;
-  background-color: #831d1d8f;
+  background-color: #00000070;
+}
 
+.card-header {
+  padding: 10px;
+  height: 20px; 
+
+  color: white;
+  background-color:#101010;
+
+  /* font-family:Impact, Charcoal, sans-serif; */
+  font-weight:700;
+  text-align: left;
+}
+.card-body {
+  padding: 10px;
+}
+
+.map-label{
+  margin-left: 10px;
+  color: #30a5ff;
+}
+.map-select-section{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .custom-select-list {
@@ -31,7 +53,6 @@ code {
 
   margin-top: 10px; 
   margin-bottom: 10px;
-  margin-left: 10px;
 
   border-color: #1a1a1a;
   outline: #000;
@@ -47,12 +68,17 @@ code {
   background-color: rgb(228, 227, 227);
 }
 
-.select-btn{
-  padding: 6px;
-  margin-right: 10px;
-  margin-left: 10px;
+.node-box-stop {
+  width: 35%;
+  height: 30px;
+  color: white;
+  background-color: #7e7e7e;
+  border: #000;
+  outline: none;
+  font-size: 16px;
+  flex: 1;
 }
 
-.selector{
-  padding: 10px;
+.node-box-stop:active {
+  background-color: #c2c2c2;
 }

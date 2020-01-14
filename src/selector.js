@@ -47,28 +47,39 @@ export default class MapSelector extends React.Component {
         }
 
         return (
-     
-            <div className="selector">
 
-                <div className = "map-select-section">
-                <select className='custom-select-list' value={this.state.selected_map} onChange={this.handleMapChange.bind(this)}>
-                    <option value="">Choose...</option>
-                    {
-                        map_options
-                    }
-                </select>
-                <button className = "select-btn"
-                    onClick={(function () {
-                        let url = `http://localhost:8888`;
+            <div className='selector'>
+                <div className='card-header'>Map Switch:</div>
+                <div className='card-body'>
+                    <div>
+                        <span style = {{"color": "white"}}> Current Map: </span> <span className = "map-label">{this.state.selected_map}</span>
+                    </div>
+                    <hr/>
+                    <div className="map-select-section">
+                        <select className='custom-select-list' onChange={(()=>{
+                        
+                            this.state.selected_map = event.target.value;
+                    
+                        }).bind(this)} value={this.state.selected_map} >
+                            <option value="">Choose...</option>
+                            { map_options}
+                        </select>
+                        <button  className='node-box-stop' 
+                            onClick={(()=>{
+                                let url = `http://localhost:8888`;
                         axios.post(url,this.axiosConfig, {data: {target: this.state.selected_map}})
                             .then(res => {
                                 canvas_api.reload(res.data);
                             });
-                        }).bind(this)}>
-                    select
-            </button>
+                        }).bind(this)}
+                            >
+                            Select
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            
         );
     }
 }
