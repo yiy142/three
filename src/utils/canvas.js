@@ -12,6 +12,52 @@ var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 var clickCoordinate = new THREE.Vector2();
 
+let colorTheme = {
+    peacewater:{
+        backgroud : 0xA5D2F1,
+        grid: 0x0677BF,
+        clicked: 0xF2808A,
+        dashed_line:0x000540,
+        solid_line: 0x0015FF,
+        pillar: 0x000540,
+        lot_border: 0xE5F0FA,
+        lot_space: 0x0677BF,
+        arrow : 0xDDDDDD,
+        text: 0xFFFFFF,
+        light: 0xFFFFFF
+    },
+    peace:{
+        backgroud : 0x142601,
+        grid: 0xF2F2F2,
+        clicked: 0xF2F2F2,
+        dashed_line:0x7CEA9C,
+        solid_line: 0x2EC4B6,
+        pillar: 0xF20505,
+        lot_border: 0xE5F0FA,
+        lot_space: 0x597320,
+
+        arrow : 0xDDDDDD,
+        text: 0xFFFFFF,
+        light: 0xF0F0F0
+    },
+    yicheng: {
+        background: 0x081624,
+        grid: 0xFFFFFF,
+        clicked: 0xFF0000,
+        dashed_line: 0xFFFFFF,
+        solid_line: 0x215366,
+        pillar : 0xB7B7B7,
+        lot_border:0xB0B0C0,
+        lot_space : 0x081624,
+        arrow : 0xFFFFFF,
+        text : 0xFFFFFF,
+        light: 0xF0F0F0
+    }
+    
+
+}
+let theme =colorTheme.peace;
+
 OBJLoader(THREE);
 
 var scene;
@@ -68,13 +114,13 @@ function init_three(SCREEN_WIDTH, SCREEN_HEIGHT) {
     // render
     renderer = new THREE.WebGLRenderer({ antialias: true, });
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    renderer.setClearColor(0x081624, 1.0);
+    renderer.setClearColor(theme.backgroud, 1.0);
     renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
-    scene.add(new THREE.AmbientLight(0xF0F0F0));
+    scene.add(new THREE.AmbientLight(theme.light));
 
     // grid
     var grid_width = 300;
-    gridHelper = new THREE.GridHelper(grid_width, grid_width, 0xFFFFFF, 0xFFFFFF);
+    gridHelper = new THREE.GridHelper(grid_width, grid_width, theme.grid, theme.grid);
     gridHelper.rotation.x = Math.PI / 2;
  
     gridHelper.position.z = 6.9; //TODO
@@ -151,16 +197,16 @@ function onClickEvent(event){
     }
 
     //toggle
-    if (this.material.color.equals( new THREE.Color( 0xff0000 ))){
+    if (this.material.color.equals( new THREE.Color( theme.clicked ))){
         this.material.color.setHex( this.colorType );
 
         var selectedInfo = scene.getObjectByName(this.childName);
         scene.remove( selectedInfo );
     }
     else{
-        this.material.color.setHex(0xFF0000);
+        this.material.color.setHex(theme.clicked);
         let vertice = new THREE.Vector3(0,0,0);
-        let infoText = gen_text(vertice,this.childName+"",vertice,"#FFFFFF");
+        let infoText = gen_text(vertice,this.childName+"",vertice, theme.text);
         infoText.name=this.childName;
 
         infoText.position.x = clickCoordinate.x;
@@ -238,7 +284,7 @@ function gen_polygon(vertices, colorName, borderColor) {
     });
 
     var geometry = new THREE.ShapeGeometry(shape);
-    var material = new THREE.MeshBasicMaterial({ color: colorName, side: THREE.DoubleSide });
+    var material = new THREE.MeshBasicMaterial({ color: colorName, side: THREE.DoubleSide});
     var poly = new THREE.Mesh(geometry, material);
     poly.position.z = vertices[0].z;
 
@@ -260,11 +306,11 @@ function draw_lanes(msg){
     let pts = msg.pts;
     var obj;
     if(msg.style == "dashed_line"){
-        var colorName = 0xFFFFFF;
+        var colorName = theme.dashed_line;
         obj = gen_dashed_line(pts, colorName,1.5);
         obj.colorType = colorName;
     }else{
-        var colorName = 0x215366;
+        var colorName = theme.solid_line;
         obj = gen_line(pts, colorName);
         obj.colorType = colorName;
     }
@@ -329,11 +375,11 @@ function draw_pillar(msg){
         bevelEnabled: false
     };
     var geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-    var material = new THREE.MeshBasicMaterial( { color: `#B7B7B7`,transparent:true,opacity:0.5 } );
+    var material = new THREE.MeshBasicMaterial( { color: theme.pillar,transparent:true,opacity:0.5 } );
     var mesh = new THREE.Mesh( geometry, material ) ;
     mesh.position.z = corners[0].z;
 
-    mesh.colorType= 0xB7B7B7;
+    mesh.colorType= theme.pillar;
     mesh.childName = msg.id;
     mesh.cursor = "pointer";
     mesh.on('click', onClickEvent);
@@ -352,19 +398,19 @@ function draw_lots(msg){
      let checkedColor = "#6387A6";  
      let occupiedColor = "#A7C6D9";
      let selectedColor = "#30A5FF";
-     let colorName = "#081624";
+     let colorName = theme.lot_space;
 
     // let vertice = new THREE.Vector3((point0.x+point1.x)/2,(point0.y+point1.y)/2,point0.z);
      let vertice = new THREE.Vector3(0,0,0);
-     let text = gen_text(vertice,id+"",vertice,"#FFFFFF");
+     let text = gen_text(vertice,id+"",vertice,theme.text);
      text.position.x = (pointsArray[0].x + pointsArray[1].x+pointsArray[2].x+pointsArray[3].x)/4;
      text.position.y = (pointsArray[0].y + pointsArray[1].y+pointsArray[2].y+pointsArray[3].y)/4;
      text.position.z = 1;
-     var borderColor = 0xB0B0C0;
+     var borderColor = theme.lot_border;
      //parkingPlotID.add(id);
      let cpt = msg.cpos;
      let ept = msg.epos;
-     let arrow = gen_arrow(cpt, ept, "#FFFFFF");
+     let arrow = gen_arrow(cpt, ept, theme.arrow);
      arrow.position.z = 0.5;
 
      let obj = gen_polygon(pointsArray, colorName, borderColor);

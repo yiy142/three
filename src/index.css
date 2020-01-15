@@ -33,6 +33,11 @@ code {
   font-weight:700;
   text-align: left;
 }
+
+.card-header:hover{
+  cursor: pointer;
+  background-color: rgba(126, 123, 123, 0.486);
+}
 .card-body {
   padding: 10px;
 }
