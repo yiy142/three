@@ -1,0 +1,10 @@
+{
+    "backend_url" : "http://localhost:8888",
+    "maplist_url" : "http://mvp.momenta.works/config/map/map_lists.json",
+    "axios_config": {
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods":"POST"
+        }
+    }
+}

@@ -4,27 +4,27 @@ import axios from 'axios';
 import * as canvas_api from "utils/canvas.js"
 
 export default class MapSelector extends React.Component {
-    
     constructor(props) {
         super(props);
         this.state = {
             maps: {},
             selected_map: ''
         }
-        this.axiosConfig = {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods':'GET'
-            }
-        };
+
+        this.config = require("assets/config.json");
     }
 
     componentDidMount() {
-        let url = `http://localhost:8888`;
-        axios.post(url,this.axiosConfig,{data: {target: `http://mvp.momenta.works/config/map/map_lists.json`}})
+        let url = this.config.backend_url;
+        let targetUrl = this.config.maplist_url;
+        let axiosConfig = this.config.axios_config;
+                
+        axios.post(url, {
+            headers: axiosConfig.headers,
+            data: {
+                target: targetUrl
+            }})
             .then(res => {
-                console.log(res);
-
                 const newMaps = res.data;
                 this.setState({maps : newMaps});
             });
@@ -37,13 +37,11 @@ export default class MapSelector extends React.Component {
     }
 
     render() {
-
         let map_options = [];
         for (let mapName in this.state.maps) {
             let elem = this.state.maps[mapName];
 
             map_options.push(<option value={elem[elem.length - 1]} key={elem}>{mapName}</option>);
-            
         }
 
         return (
@@ -60,18 +58,24 @@ export default class MapSelector extends React.Component {
                         
                             this.state.selected_map = event.target.value;
                     
-                        }).bind(this)} value={this.state.selected_map} >
-                            <option value="">Choose...</option>
+                        }).bind(this)} defaultValue={this.state.selected_map} >
+                            <option default="">Choose...</option>
                             { map_options}
                         </select>
                         <button  className='node-box-stop' 
                             onClick={(()=>{
-                                let url = `http://localhost:8888`;
-                        axios.post(url,this.axiosConfig, {data: {target: this.state.selected_map}})
-                            .then(res => {
-                                canvas_api.reload(res.data);
-                            });
-                        }).bind(this)}
+                                let url = this.config.backend_url;
+                                let axiosConfig = this.config.axios_config;
+                                        
+                                axios.post(url, {
+                                    headers: axiosConfig.headers,
+                                    data: {
+                                        target: this.state.selected_map
+                                    }})
+                                    .then(res => {
+                                        canvas_api.reload(res.data);
+                                    });
+                            })}
                             >
                             Select
                         </button>

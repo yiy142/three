@@ -22,9 +22,10 @@ function makeMessage(text) {
     return `${colors.blue("[store]")} ${text}`;
   }
   
-  function log(text) {
+function log(text) {
     console.log(makeMessage(text));
-  }
+}
+
 
 var corsOptions = {
     origin: function (origin, callback) {
@@ -46,16 +47,12 @@ function serve() {
 
 
     app.post("/", (request, response) => {
-        log("in get");
-        log(request.headers.origin);
 
-        //let url = `http://mvp.momenta.works/config/map/map_lists.json`;
-        console.dir(request.body.target);
-        let url = request.body.target;
+        let url = request.body.data.target;
+
         axios.get(url, axiosConfig)
             .then(res => {
-                //response.json(res.data);
-                response.send(res.data);
+                response.json(res.data);
         }).catch(err=>{
             response.send(err);
         });

@@ -37,7 +37,6 @@ function dispose_obj(obj) {
 }
 
 function reload(newMap){
-    console.log("Reload!");
     lots.forEach(obj => {
         dispose_obj(obj);
     })
@@ -54,16 +53,6 @@ function reload(newMap){
     pillar.length = 0;
 
     jsonToThree.readJSON(newMap);
-    // var parent = document.getElementById("canvas");
-    // var child = document.getElementsByClassName("main-canvas");
-    // if (child.length > 0 ){
-    //     map = newMap;
-    //     parent.removeChild(child[0]);
-    //     initialize("canvas", window.innerWidth, window.innerHeight);
-    // }
-    // else{
-    //     console.warn("no map rendered yet!");
-    // }
 }
 
 function init_three(SCREEN_WIDTH, SCREEN_HEIGHT) {
@@ -88,19 +77,13 @@ function init_three(SCREEN_WIDTH, SCREEN_HEIGHT) {
     gridHelper = new THREE.GridHelper(grid_width, grid_width, 0xFFFFFF, 0xFFFFFF);
     gridHelper.rotation.x = Math.PI / 2;
  
-    gridHelper.position.z = 6.9;
+    gridHelper.position.z = 6.9; //TODO
     gridHelper.traverse(function(child) {
         child.material.transparent = true;
         child.material.opacity = 0.2;
     })
-    let plane = gridHelper;
+
     scene.add(gridHelper);
-    window.gridUp = (value = 0.3)=>{
-        gridHelper.position.z += value;
-    }
-    window.gridDown = (value = 0.3)=>{
-        gridHelper.position.z -= value;
-    }
 
     // control
     control = new OrbitControls(camera, renderer.domElement);
@@ -145,6 +128,8 @@ function initialize(canvasContainerId, SCREEN_WIDTH, SCREEN_HEIGHT) {
     renderer.domElement.height = SCREEN_HEIGHT * devicePixelRatio;
     canvasContainer.appendChild(renderer.domElement);
     window.addEventListener( 'resize', onWindowResize, false );
+
+    //Render the map content
     jsonToThree.readJSON(map);
     console.log("initialized!");
 }
@@ -161,6 +146,7 @@ function onWindowResize(){
 }
 
 function onClickEvent(event){
+    console.log(this);
     if (event.intersects.length > 0){
         clickCoordinate = event.intersects[0].point;
     }
@@ -180,7 +166,7 @@ function onClickEvent(event){
 
         infoText.position.x = clickCoordinate.x;
         infoText.position.y = clickCoordinate.y;
-        infoText.position.z = 10;
+        infoText.position.z = this.position.z + this.geometry.vertices[0].z;
         
         scene.add(infoText);
     }
@@ -274,7 +260,6 @@ let lanes = []
 function draw_lanes(msg){
     let pts = msg.pts;
     var obj;
-    var id = new Date().getTime();
     if(msg.style == "dashed_line"){
         var colorName = 0xFFFFFF;
         obj = gen_dashed_line(pts, colorName,1.5);
@@ -286,7 +271,7 @@ function draw_lanes(msg){
     }
     obj.childName = msg.id;
     obj.cursor = "pointer";
-    obj.on('click', onClickEvent);
+    obj.on('mousedown', onClickEvent.bind(obj));
 
    lanes.push(obj);
    scene.add(obj);

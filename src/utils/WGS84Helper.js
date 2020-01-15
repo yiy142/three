@@ -20,7 +20,6 @@ let WGS84HelperProjection = function(){
 
     function Geodetic2Relative(llh) 
     {   
-        
         let result = proj4(latlonProjWkt,tmercProjWkt,[llh.x,llh.y]);
         let relative = {
             x:result[0] - offset.x,

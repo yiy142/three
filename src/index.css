@@ -26,8 +26,8 @@ code {
   padding: 10px;
   height: 20px; 
 
-  color: white;
-  background-color:#101010;
+  color: rgb(204, 189, 189);
+  background-color:rgba(87, 84, 84, 0.486);
 
   /* font-family:Impact, Charcoal, sans-serif; */
   font-weight:700;
@@ -77,6 +77,7 @@ code {
   outline: none;
   font-size: 16px;
   flex: 1;
+  border-radius: 5px;
 }
 
 .node-box-stop:active {
