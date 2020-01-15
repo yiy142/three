@@ -146,7 +146,6 @@ function onWindowResize(){
 }
 
 function onClickEvent(event){
-    console.log(this);
     if (event.intersects.length > 0){
         clickCoordinate = event.intersects[0].point;
     }
