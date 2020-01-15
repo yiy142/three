@@ -10,10 +10,6 @@ let JSONtoTHREE = function () {
         window.map_anchor = config.anchor;
         window.map_offset = config.offset;
 
-        console.log(window.map_anchor);
-        console.log(window.map_offset);
-        
-
         let lanes = data.lanes;
         let lots = data.lots;
         let pillars = data.pillar;
