@@ -56,7 +56,7 @@ let colorTheme = {
     
 
 }
-let theme =colorTheme.peace;
+let theme =colorTheme.yicheng;
 
 OBJLoader(THREE);
 
@@ -390,16 +390,19 @@ function draw_pillar(msg){
 
 /********* DRAW LOTS *********/
 let lots = []
-function draw_lots(msg){
+function draw_lots(msg, wrong){
     let id = msg.id;
     //lots_store[id] = msg;
     let pointsArray=msg.corners;
 
-     let checkedColor = "#6387A6";  
-     let occupiedColor = "#A7C6D9";
-     let selectedColor = "#30A5FF";
-     let colorName = theme.lot_space;
-
+    let checkedColor = "#6387A6";  
+    let occupiedColor = "#A7C6D9";
+    let selectedColor = "#30A5FF";
+    let colorName = theme.lot_space;
+    if (wrong){
+        colorName = "#FF0000";
+    }
+    
     // let vertice = new THREE.Vector3((point0.x+point1.x)/2,(point0.y+point1.y)/2,point0.z);
      let vertice = new THREE.Vector3(0,0,0);
      let text = gen_text(vertice,id+"",vertice,theme.text);

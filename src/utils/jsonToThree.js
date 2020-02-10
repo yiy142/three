@@ -1,9 +1,13 @@
 import WGS84Helper from "utils/WGS84Helper"
 import * as canvas from "utils/canvas.js"
+import * as validator from "utils/validator.js"
+
 const THREE = require('three');
+const _ = require("lodash");
 
 let JSONtoTHREE = function () {
     let wgs84Helper =new WGS84Helper();
+    let lot_lane = {};
 
     function readJSON(data){
         let config = data.config;
@@ -14,10 +18,24 @@ let JSONtoTHREE = function () {
         let lots = data.lots;
         let pillars = data.pillar;
 
+        //matchLane(lots, lanes);
         renderLines(lanes);
         renderLots(lots);
         renderPillars(pillars);
     }
+
+    function matchLane(lots, lanes){
+        _.forEach(lots, lot=>{
+            //find the lane that current lot belongs to
+            for (let i in lanes){
+                let lane = lanes[i];
+                //TODO
+                lot_lane[lot.id] = lane;
+                break;
+            };
+        });
+    }
+
 
     function renderLines(lanes){
         for(let laneName in lanes){
@@ -66,7 +84,9 @@ let JSONtoTHREE = function () {
             lot.id = lot_wgs84.id;
             lot.timestamp = lot_wgs84.timestamp;
 
-            canvas.draw_lots(lot);
+            let lane = lot_lane[lot.id];
+            let wrong = validator.checkDirection(lot);
+            canvas.draw_lots(lot, wrong);
         }
     }
 
