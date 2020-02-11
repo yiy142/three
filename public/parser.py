@@ -2,7 +2,8 @@ import xmltodict
 import json
 import sys
 
-omit = ["road_border_physical", "human_access", "no_parking_zone", "garage_entrance","garage_exit","speed_bump"]
+omit = []
+#omit = [ "human_access", "no_parking_zone"]
 def cpos(a,b,c,d):
     return {
         "x" : float((a["x"] + b["x"] + c["x"] + d["x"])/4),
@@ -64,8 +65,11 @@ for way in ways:
         key = tagPair["@k"]
         if key.split("_")[-1] == "type":
             key = "type"
-        tagDict[key] = tagPair["@v"]
-    if "highway" in tagDict or tagDict["type"] in omit:
+        if key == "highway":
+            tagDict["type"] = "highway"
+        else:
+            tagDict[key] = tagPair["@v"]
+    if tagDict["type"] in omit:
         continue
 
     #sanity check
@@ -74,11 +78,17 @@ for way in ways:
 
     #Find the type Tag
     tagType = tagDict["type"]
-    if tagType in ["dashed_line", "solid_line"]:
+    if tagType in ["dashed_line", "solid_line", "highway", "road_border_physical"]:
         tagType = "lanes"
     if tagType == "parking_lot":
         tagType = "lots"
-        
+    if tagType == "speed_bump":
+        tagType = "bumps"
+    if tagType == "garage_entrance":
+        tagType = "entrance"
+    if tagType == "garage_exit":
+        tagType = "exit"
+
     if not tagType in result:
         result[tagType] = []
 
@@ -86,7 +96,7 @@ for way in ways:
     tag_id = way["@id"] if not "original_id" in tagDict else tagDict["original_id"]
     tempWay = {
         "id" : tag_id,
-        "type" : "line" if tagDict["type"] in ["solid_line", "dashed_line"] else tagDict["type"],
+        "type" : "line" if tagDict["type"] in ["solid_line", "dashed_line", "highway", "road_border_physical"] else tagDict["type"],
         "style" : tagDict["type"]
     }
 
