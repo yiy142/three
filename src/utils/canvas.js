@@ -11,6 +11,8 @@ let jsonToThree =new JSONtoTHREE();
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 var clickCoordinate = new THREE.Vector2();
+let poi_show = {};
+let poi_mesh = {};
 
 let colorTheme = {
     peacewater:{
@@ -51,7 +53,11 @@ let colorTheme = {
         lot_space : 0x081624,
         arrow : 0xFFFFFF,
         text : 0xFFFFFF,
-        light: 0xF0F0F0
+        light: 0xF0F0F0,
+        road_border_physical: 0x99CC33,
+        highway: 0xFFCC33,
+        no_parking_zone: 0xDC143C,
+        human_access: 0x00FFFF
     }
     
 
@@ -68,6 +74,7 @@ var gridHelper;
 let stats;
 let map = require("assets/tile.json");
 
+/********** THREE Utils **********/
 function dispose_obj(obj) {
     if(obj.parent){
         obj.parent.remove(obj);
@@ -301,29 +308,50 @@ function gen_polygon(vertices, colorName, borderColor) {
 }
 
 /********* DRAW LINES *********/
-let lanes = []
+// let lanes = []
 function draw_lanes(msg){
     let pts = msg.pts;
     var obj;
-    if(msg.style == "dashed_line"){
-        var colorName = theme.dashed_line;
-        obj = gen_dashed_line(pts, colorName,1.5);
-        obj.colorType = colorName;
-    }else{
-        var colorName = theme.solid_line;
-        obj = gen_line(pts, colorName);
-        obj.colorType = colorName;
+    switch (msg.style){
+        case "dashed_line":
+            var colorName = theme.dashed_line;
+            obj = gen_dashed_line(pts, colorName,1.5);
+            obj.colorType = colorName;
+            break;
+        case "solid_line": 
+            var colorName = theme.solid_line;
+            obj = gen_line(pts, colorName);
+            obj.colorType = colorName;
+            break;
+        case "road_border_physical":
+            var colorName = theme.road_border_physical;
+            obj = gen_line(pts, colorName);
+            obj.colorType = colorName;
+            break;
+        case "highway":
+            var colorName = theme.highway;
+            obj = gen_line(pts, colorName);
+            obj.colorType = colorName;
+            break;
+        default: 
+            console.log("undefined line type: ", msg.style);
+            break;
     }
+
     obj.childName = msg.id;
     obj.cursor = "pointer";
     obj.on('mousedown', onClickEvent.bind(obj));
 
-   lanes.push(obj);
-   scene.add(obj);
+    if (! msg.type in poi_mesh){
+        poi_mesh[msg.type] = [];
+    }
+
+    poi_mesh[msg.type].push(obj);
+    //lanes.push(obj);
+    scene.add(obj);
 }
 
 function gen_dashed_line(vertices,colorName,lineWidth = 2){
-
     var geometry = new THREE.Geometry();
     var material = new THREE.LineDashedMaterial({ 
         color: colorName, 
@@ -359,50 +387,112 @@ function gen_arrow(from, to, colorName, headWidth = 1){
     return arrowHelper;
 }
 
-/********* DRAW PILLARS *********/
-let pillar = []
-function draw_pillar(msg){
+/********* DRAW Cubic Meshes *********/
+function draw_cube(msg){
     let corners = msg.corners;
+    var obj;
     var shape = new THREE.Shape();
     shape.moveTo( corners[0].x,corners[0].y);
     shape.lineTo( corners[1].x,corners[1].y);
     shape.lineTo( corners[2].x,corners[2].y);
     shape.lineTo( corners[3].x,corners[3].y);
     shape.lineTo( corners[0].x,corners[0].y);
+
     var extrudeSettings = {
-        steps: 2,
-        depth: 5,
         bevelEnabled: false
     };
-    var geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-    var material = new THREE.MeshBasicMaterial( { color: theme.pillar,transparent:true,opacity:0.5 } );
-    var mesh = new THREE.Mesh( geometry, material ) ;
-    mesh.position.z = corners[0].z;
+    var geometry;
+    var material;
+    switch (msg.type){
+        case "garage_exit": 
+            extrudeSettings.steps = 2;
+            extrudeSettings.depth = 1;
+            geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+            material = new THREE.MeshBasicMaterial( { color: theme.pillar,transparent:true,opacity:0.5 } );
+            obj = new THREE.Mesh( geometry, material ) ;
+            obj.colorType= theme.pillar;
+            break;
+        case "speed_bump": 
+            extrudeSettings.steps = 2;
+            extrudeSettings.depth = 1;
+            geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+            material = new THREE.MeshBasicMaterial( { color: theme.bump,transparent:true,opacity:0.5 } );
+            obj = new THREE.Mesh( geometry, material ) ;
+            obj.colorType= theme.bump;
+            break;
+        case "garage_entrance": 
+            extrudeSettings.steps = 2;
+            extrudeSettings.depth = 1;
+            geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+            material = new THREE.MeshBasicMaterial( { color: theme.entrance,transparent:true,opacity:0.5 } );
+            obj = new THREE.Mesh( geometry, material ) ;
+            obj.colorType= theme.entrance;
+            break;
+        case "pillar": 
+            extrudeSettings.steps = 2;
+            extrudeSettings.depth = 5;
+            geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+            material = new THREE.MeshBasicMaterial( { color: theme.pillar,transparent:true,opacity:0.5 } );
+            obj = new THREE.Mesh( geometry, material ) ;
+            obj.colorType= theme.pillar;
+            break;
+        default: obj = null; console.log("undefined cube: ", msg.type); break;
+    }
+    
+    obj.childName = msg.id;
+    obj.cursor = "pointer";
+    obj.position.z = corners[0].z;
 
-    mesh.colorType= theme.pillar;
-    mesh.childName = msg.id;
-    mesh.cursor = "pointer";
-    mesh.on('click', onClickEvent);
+    obj.on('mousedown', onClickEvent.bind(obj));
 
-    scene.add( mesh );
-    pillar.push(mesh)
+    if (! msg.type in poi_mesh){
+        poi_mesh[msg.type] = [];
+    }
+    poi_mesh[msg.type].push(obj);
+    scene.add( obj );
 }
 
+/********* DRAW SQUARES ******/
+function draw_square(msg){
+    let id = msg.id;
+    let pointsArray=msg.corners;
+    let type = msg.type;
+    let obj;
+    let colorName;
+    let borderColor;
+
+    if (type == "no_parking_zone"){
+        colorName = theme.no_parking_zone;
+        obj = gen_polygon(pointsArray, colorName, borderColor);
+    }
+    else if (type == "human_access"){
+        colorName = theme.human_access;
+        obj = gen_polygon(pointsArray, colorName, borderColor);
+    }
+    obj.userData.id = id;
+    obj.userData.points = pointsArray;
+    obj.userData.type = type;
+    
+    if (!type in poi_mesh){
+        poi_mesh[type] = [];
+    }
+    poi_mesh[type].push(obj);
+    scene.add(obj)
+}
+
+
 /********* DRAW LOTS *********/
-let lots = []
+//let lots = []
 function draw_lots(msg, wrong){
     let id = msg.id;
     //lots_store[id] = msg;
     let pointsArray=msg.corners;
 
-    let checkedColor = "#6387A6";  
-    let occupiedColor = "#A7C6D9";
-    let selectedColor = "#30A5FF";
     let colorName = theme.lot_space;
     if (wrong){
         colorName = "#FF0000";
     }
-    
+
     // let vertice = new THREE.Vector3((point0.x+point1.x)/2,(point0.y+point1.y)/2,point0.z);
      let vertice = new THREE.Vector3(0,0,0);
      let text = gen_text(vertice,id+"",vertice,theme.text);
@@ -413,6 +503,8 @@ function draw_lots(msg, wrong){
      //parkingPlotID.add(id);
      let cpt = msg.cpos;
      let ept = msg.epos;
+     let type = msg.type;
+
      let arrow = gen_arrow(cpt, ept, theme.arrow);
      arrow.position.z = 0.5;
 
@@ -425,13 +517,37 @@ function draw_lots(msg, wrong){
      obj.userData.id = id;
      obj.userData.points = pointsArray;
      obj.userData.cpt = cpt;
-     lots.push(obj);
+     obj.userData.type = type;
+     //lots.push(obj);
+     if (!type in poi_mesh){
+         poi_mesh[type] = [];
+     }
+     poi_mesh[type].push(obj);
      scene.add(obj)
 }
+
+/*********** TOGGLE POI SWITCH *********/
+
+function togglePOI(poiName){
+    poi_show.poiName = ! poi_show.poiName;
+    poi_mesh.poiName.map(mesh =>{
+        //显示
+        if (poi_show.poiName){
+            
+        }
+        //隐藏
+        else{
+
+        }
+    })
+}
+
 export {
     initialize,
     draw_lanes,
-    draw_pillar,
     draw_lots,
-    reload
+    reload,
+    togglePOI,
+    draw_cube,
+    draw_square
 }

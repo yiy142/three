@@ -22,6 +22,16 @@ code {
   background-color: #00000070;
 }
 
+.controller{
+  position: absolute;
+  z-index:1;
+  height: auto;
+  margin: 15px;
+  width: 225px;
+  border:0;
+  background-color: #00000070;
+}
+
 .card-header {
   padding: 10px;
   height: 20px; 

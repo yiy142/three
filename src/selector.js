@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 import * as canvas_api from "utils/canvas.js"
+import POIController from './controller';
 
 export default class MapSelector extends React.Component {
     constructor(props) {
@@ -9,7 +10,8 @@ export default class MapSelector extends React.Component {
         this.state = {
             maps: {},
             selected_map: '',
-            show : true
+            show : true,
+            poiNames : []
         }
 
         this.config = require("assets/config.json");
@@ -79,16 +81,18 @@ export default class MapSelector extends React.Component {
                                     }})
                                     .then(res => {
                                         canvas_api.reload(res.data);
+                                        //TODO, update poiNames, pass down to controller
+                                        this.state.poiNames = res.data.pois;
                                     });
                             })}
                             >
                             Select
                         </button>
                     </div>
+                    <POIController poiNames = {this.state.poiNames} />
                 </div>
-            </div>
-
-            
+                
+            </div>  
         );
     }
 }

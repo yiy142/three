@@ -2,7 +2,6 @@ import WGS84Helper from "utils/WGS84Helper"
 import * as canvas from "utils/canvas.js"
 import * as validator from "utils/validator.js"
 
-const THREE = require('three');
 const _ = require("lodash");
 
 let JSONtoTHREE = function () {
@@ -13,26 +12,17 @@ let JSONtoTHREE = function () {
         let config = data.config;
         window.map_anchor = config.anchor;
         window.map_offset = config.offset;
+        let poiList = Object.keys(data);
 
-        let lanes = data.lanes;
-        let lots = data.lots;
-        let pillars = data.pillar;
-
-        //matchLane(lots, lanes);
-        renderLines(lanes);
-        renderLots(lots);
-        renderPillars(pillars);
-    }
-
-    function matchLane(lots, lanes){
-        _.forEach(lots, lot=>{
-            //find the lane that current lot belongs to
-            for (let i in lanes){
-                let lane = lanes[i];
-                //TODO
-                lot_lane[lot.id] = lane;
-                break;
-            };
+        poiList.map(poiName=>{
+            let curPoiGroup = data.poiName;
+            switch (data[poiName][0].type){
+                case "line":  renderLines(curPoiGroup); break;
+                case "parking_lot": renderLots(curPoiGroup); break;
+                case "human_access": renderSquare(curPoiGroup); break;
+                case "no_parking_zone": renderSquare(curPoiGroup); break;
+                default: renderCube(cubeLikeArray);
+            }
         });
     }
 
@@ -84,31 +74,52 @@ let JSONtoTHREE = function () {
             lot.id = lot_wgs84.id;
             lot.timestamp = lot_wgs84.timestamp;
 
-            let lane = lot_lane[lot.id];
-            let wrong = validator.checkDirection(lot);
+            // let lane = lot_lane[lot.id];
+            // let wrong = validator.checkDirection(lot);
+            let wrong = false;
             canvas.draw_lots(lot, wrong);
         }
     }
 
-    function renderPillars(pillars){
-        for(let pillarName in pillars){
-            let pillar_wgs84 = pillars[pillarName]
-            let corners_wgs84 = pillar_wgs84.corners;
-            let pillar = {};
-            pillar.corners = new Array();
+    function renderCube(cubes){
+
+        for(let cubeName in cubes){
+            let cube_wgs84 = cubes[cubeName];
+            let corners_wgs84 = cube_wgs84.corners;
+            let cube = {};
+            cube.corners = new Array();
           
             for(let cor_wgs84 of corners_wgs84){
                 let corner = wgs84Helper.Geodetic2Relative(cor_wgs84);
-                pillar.corners.push(corner);
+                cube.corners.push(corner);
             }
-            pillar.id = pillar_wgs84.id;
-            pillar.timestamp = pillar_wgs84.id;
-            canvas.draw_pillar(pillar);
+            cube.id = cube_wgs84.id;
+            cube.timestamp = cube_wgs84.id;
+            cube.type = cube_wgs84.type;
+
+            canvas.draw_cube(cube);
         }
     }
 
+    function renderSquare(squares){
+        for(let squareName in squares){
+            let square_wgs84 = squares[squareName];
+            let corners_wgs84 = square_wgs84.corners;
+            let square = {};
+            square.corners = new Array();
+          
+            for(let cor_wgs84 of corners_wgs84){
+                let corner = wgs84Helper.Geodetic2Relative(cor_wgs84);
+                square.corners.push(corner);
+            }
+            square.id = square_wgs84.id;
+            square.timestamp = square_wgs84.id;
+            square.type = square_wgs84.type;
+
+            canvas.draw_square(square);
+        }
+    }
     this.readJSON = readJSON;
-    
 }
 
 export default JSONtoTHREE;

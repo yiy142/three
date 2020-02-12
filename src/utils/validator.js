@@ -1,6 +1,6 @@
 /* No.15 朝向正确 */
-function checkDirection(msg){
-    let pointsArray=msg.corners;
+function checkDirection(lot, lane){
+    let pointsArray=lot.corners;
     // 起点终点
     if (pointsArray[0] != pointsArray[4]){
         return false;
@@ -20,7 +20,7 @@ function checkDirection(msg){
     }
 
     //判断0和3是否靠近路边线
-
+    
 }
 
 export{

@@ -76,7 +76,7 @@ for way in ways:
     if "type" not in tagDict:
         continue
 
-    #Find the type Tag
+    #Find the type Tag, re-name them if needed
     tagType = tagDict["type"]
     if tagType in ["dashed_line", "solid_line", "highway", "road_border_physical"]:
         tagType = "lanes"
@@ -88,6 +88,8 @@ for way in ways:
         tagType = "entrance"
     if tagType == "garage_exit":
         tagType = "exit"
+    if tagType == "pillar":
+        tagType = "pillars"
 
     if not tagType in result:
         result[tagType] = []
@@ -120,6 +122,6 @@ for way in ways:
             tempWay["cpos"] = cpos(index_node[0],index_node[1],index_node[2],index_node[3])
     result[tagType].append(tempWay)
 
-print(result.keys())
+print(list(result.keys()))
 with open(outFileName, 'w') as fp:
     json.dump(result, fp)
