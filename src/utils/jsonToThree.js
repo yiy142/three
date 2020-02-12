@@ -13,15 +13,17 @@ let JSONtoTHREE = function () {
         window.map_anchor = config.anchor;
         window.map_offset = config.offset;
         let poiList = Object.keys(data);
-
+        console.log(poiList);
         poiList.map(poiName=>{
-            let curPoiGroup = data.poiName;
-            switch (data[poiName][0].type){
-                case "line":  renderLines(curPoiGroup); break;
-                case "parking_lot": renderLots(curPoiGroup); break;
+            let curPoiGroup = data[poiName];
+            switch (poiName){
+                case "lanes":  renderLines(curPoiGroup); break;
+                case "lots": renderLots(curPoiGroup); break;
                 case "human_access": renderSquare(curPoiGroup); break;
                 case "no_parking_zone": renderSquare(curPoiGroup); break;
-                default: renderCube(cubeLikeArray);
+                case "config": break;
+                default: renderCube(curPoiGroup); break;
+
             }
         });
     }

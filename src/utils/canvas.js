@@ -57,7 +57,10 @@ let colorTheme = {
         road_border_physical: 0x99CC33,
         highway: 0xFFCC33,
         no_parking_zone: 0xDC143C,
-        human_access: 0x00FFFF
+        human_access: 0x00FFFF,
+        bump: 0xDAA520,
+        entrance: 0x00FF00,
+        exit: 	0x8B008B
     }
     
 
@@ -342,12 +345,11 @@ function draw_lanes(msg){
     obj.cursor = "pointer";
     obj.on('mousedown', onClickEvent.bind(obj));
 
-    if (! msg.type in poi_mesh){
+    if (!(msg.type in poi_mesh)){
         poi_mesh[msg.type] = [];
     }
 
     poi_mesh[msg.type].push(obj);
-    //lanes.push(obj);
     scene.add(obj);
 }
 
@@ -408,13 +410,13 @@ function draw_cube(msg){
             extrudeSettings.steps = 2;
             extrudeSettings.depth = 1;
             geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-            material = new THREE.MeshBasicMaterial( { color: theme.pillar,transparent:true,opacity:0.5 } );
+            material = new THREE.MeshBasicMaterial( { color: theme.exit,transparent:true,opacity:0.5 } );
             obj = new THREE.Mesh( geometry, material ) ;
-            obj.colorType= theme.pillar;
+            obj.colorType= theme.exit;
             break;
         case "speed_bump": 
             extrudeSettings.steps = 2;
-            extrudeSettings.depth = 1;
+            extrudeSettings.depth = 0.5;
             geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
             material = new THREE.MeshBasicMaterial( { color: theme.bump,transparent:true,opacity:0.5 } );
             obj = new THREE.Mesh( geometry, material ) ;
@@ -445,7 +447,7 @@ function draw_cube(msg){
 
     obj.on('mousedown', onClickEvent.bind(obj));
 
-    if (! msg.type in poi_mesh){
+    if (! (msg.type in poi_mesh)){
         poi_mesh[msg.type] = [];
     }
     poi_mesh[msg.type].push(obj);
@@ -473,7 +475,7 @@ function draw_square(msg){
     obj.userData.points = pointsArray;
     obj.userData.type = type;
     
-    if (!type in poi_mesh){
+    if (!(type in poi_mesh)){
         poi_mesh[type] = [];
     }
     poi_mesh[type].push(obj);
@@ -519,7 +521,7 @@ function draw_lots(msg, wrong){
      obj.userData.cpt = cpt;
      obj.userData.type = type;
      //lots.push(obj);
-     if (!type in poi_mesh){
+     if (!(type in poi_mesh)){
          poi_mesh[type] = [];
      }
      poi_mesh[type].push(obj);
