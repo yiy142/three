@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 import * as canvas_api from "utils/canvas.js"
-import POIController from './controller';
+
 
 export default class MapSelector extends React.Component {
     constructor(props) {
@@ -10,7 +10,6 @@ export default class MapSelector extends React.Component {
         this.state = {
             maps: {},
             selected_map: '',
-            show : true,
             poiNames : []
         }
 
@@ -43,19 +42,12 @@ export default class MapSelector extends React.Component {
         let map_options = [];
         for (let mapName in this.state.maps) {
             let elem = this.state.maps[mapName];
-
             map_options.push(<option value={elem[elem.length - 1]} key={elem}>{mapName}</option>);
         }
-        let hideStyle = {"display": this.state.show ? "block" : "none" }
+
         return (
-
             <div className='selector'>
-                <div className='card-header' onClick = { (event) =>{
-                    
-                    this.setState({show: !this.state.show});
-                }}>Map Switch</div>
-
-                <div className='card-body' style = {hideStyle}>
+                <div className='card-body'>
                     <div>
                         <span style = {{"color": "white"}}> Current Map: </span> <span className = "map-label">{this.state.selected_map}</span>
                     </div>
@@ -89,7 +81,6 @@ export default class MapSelector extends React.Component {
                             Select
                         </button>
                     </div>
-                    <POIController poiNames = {this.state.poiNames} />
                 </div>
                 
             </div>  

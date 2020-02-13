@@ -79,34 +79,30 @@ let map = require("assets/tile.json");
 
 /********** THREE Utils **********/
 function dispose_obj(obj) {
-    if(obj.parent){
-        obj.parent.remove(obj);
-    }
+    if (_.isNil(obj)) {
+        console.log('dispose null object');
+    } else {
+        if(obj.parent){
+            obj.parent.remove(obj);
+        }
 
-    if(obj.geometry){
-        obj.geometry.dispose();
+        if(obj.geometry){
+            obj.geometry.dispose();
+        }
+        if(obj.material){
+            obj.material.dispose();
+        }
+        obj = undefined;
     }
-    if(obj.material){
-        obj.material.dispose();
-    }
-    obj = undefined;
 }
 
 function reload(newMap){
-    lots.forEach(obj => {
-        dispose_obj(obj);
-    })
-    lots.length = 0;
-
-    lanes.forEach(obj => {
-        dispose_obj(obj);
-    })
-    lanes.length = 0;
-
-    pillar.forEach(obj =>{
-        dispose_obj(obj);
-    })
-    pillar.length = 0;
+    for (let key in poi_mesh){
+        poi_mesh[key].forEach(obj=>{
+            dispose_obj(obj);
+        });
+        poi_mesh[key].length = [];
+    }
 
     jsonToThree.readJSON(newMap);
 }
@@ -212,6 +208,7 @@ function onClickEvent(event){
 
         var selectedInfo = scene.getObjectByName(this.childName);
         scene.remove( selectedInfo );
+        dispose_obj(selectedInfo);
     }
     else{
         this.material.color.setHex(theme.clicked);
@@ -221,7 +218,7 @@ function onClickEvent(event){
 
         infoText.position.x = clickCoordinate.x;
         infoText.position.y = clickCoordinate.y;
-        infoText.position.z = this.position.z + this.geometry.vertices[0].z;
+        infoText.position.z = this.position.z + this.geometry.vertices[0].z+0.1;
         
         scene.add(infoText);
     }
@@ -341,15 +338,16 @@ function draw_lanes(msg){
             break;
     }
 
-    obj.childName = msg.id;
+    obj.childName = msg.id + "," + msg.style;
     obj.cursor = "pointer";
     obj.on('mousedown', onClickEvent.bind(obj));
 
-    if (!(msg.type in poi_mesh)){
-        poi_mesh[msg.type] = [];
+    if (!(msg.style in poi_mesh)){
+        poi_mesh[msg.style] = [];
     }
 
-    poi_mesh[msg.type].push(obj);
+    poi_mesh[msg.style].push(obj);
+    poi_show[msg.style] = true;
     scene.add(obj);
 }
 
@@ -441,7 +439,7 @@ function draw_cube(msg){
         default: obj = null; console.log("undefined cube: ", msg.type); break;
     }
     
-    obj.childName = msg.id;
+    obj.childName = msg.id + "," + msg.type;
     obj.cursor = "pointer";
     obj.position.z = corners[0].z;
 
@@ -451,6 +449,7 @@ function draw_cube(msg){
         poi_mesh[msg.type] = [];
     }
     poi_mesh[msg.type].push(obj);
+    poi_show[msg.type] = true;
     scene.add( obj );
 }
 
@@ -466,19 +465,27 @@ function draw_square(msg){
     if (type == "no_parking_zone"){
         colorName = theme.no_parking_zone;
         obj = gen_polygon(pointsArray, colorName, borderColor);
+        obj.colorType= theme.no_parking_zone;
     }
     else if (type == "human_access"){
         colorName = theme.human_access;
         obj = gen_polygon(pointsArray, colorName, borderColor);
+        obj.colorType= theme.human_access;
+
     }
     obj.userData.id = id;
     obj.userData.points = pointsArray;
     obj.userData.type = type;
     
+    obj.childName = msg.id + "," + msg.type;
+    obj.cursor = "pointer";
+    obj.on('mousedown', onClickEvent.bind(obj));
+
     if (!(type in poi_mesh)){
         poi_mesh[type] = [];
     }
     poi_mesh[type].push(obj);
+    poi_show[type] = true;
     scene.add(obj)
 }
 
@@ -525,23 +532,29 @@ function draw_lots(msg, wrong){
          poi_mesh[type] = [];
      }
      poi_mesh[type].push(obj);
+     poi_show[type] = true;
      scene.add(obj)
 }
 
 /*********** TOGGLE POI SWITCH *********/
 
 function togglePOI(poiName){
-    poi_show.poiName = ! poi_show.poiName;
-    poi_mesh.poiName.map(mesh =>{
-        //显示
-        if (poi_show.poiName){
-            
-        }
-        //隐藏
-        else{
 
-        }
-    })
+    if (poi_show[poiName]){
+        //隐藏
+        poi_mesh[poiName].map(mesh =>{
+            scene.remove( mesh );
+            //dispose_obj(selectedInfo);
+        })
+    }
+    else{
+        //显示
+        poi_mesh[poiName].map(mesh =>{
+            scene.add(mesh);
+        })
+    }
+    
+    poi_show[poiName] = ! poi_show[poiName];
 }
 
 export {

@@ -75,7 +75,7 @@ let JSONtoTHREE = function () {
 
             lot.id = lot_wgs84.id;
             lot.timestamp = lot_wgs84.timestamp;
-
+            lot.type = lot_wgs84.type;
             // let lane = lot_lane[lot.id];
             // let wrong = validator.checkDirection(lot);
             let wrong = false;

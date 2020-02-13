@@ -16,7 +16,7 @@ export default class ThreeCanvas extends React.Component {
     return (
       <div>
         <div id="canvas"></div>
-        <canvas id="stitch_2d" style={{ visibility: 'hidden' }}></canvas>
+        {/* <canvas id="stitch_2d" style={{ visibility: 'hidden' }}></canvas> */}
       </div>
     );
   }

@@ -9,7 +9,6 @@ export default class POIController extends React.Component {
 
     constructor(props){
         super(props);
-
         this.state = {
             poiNames : props.poiNames,
             show: true
@@ -17,13 +16,21 @@ export default class POIController extends React.Component {
     }
 
     render(){
+
         return (
-            <div className="map-select-section">
+            <div className='card-body'>
+            <div className="controller">
+                <div>
+                        <span style = {{"color": "white"}}> Controller: </span>
+                    </div>
+                    <hr/>
+
                 {
                     this.state.poiNames.map(poiName=>{
-                        <POI poi = {poiName} />
+                        return (<POI key = {poiName} poi = {poiName} />);
                     })
                 }
+            </div>
             </div>
         );
 
@@ -42,15 +49,12 @@ class POI extends React.Component{
     render(){
         return (
             <div>
-                <span> {this.state.poi} </span>
-                <hr></hr>
                 <Switch
                     value={this.state.on}
-                    labelText= {this.state.poi} labelWidth={150}
+                    labelText={this.state.poi} labelWidth={150}
                     onChange={(event) => {
-                        event.persist();
                         this.setState({on: !this.state.on});
-                        canvas_api.togglePOI(this.state.on);
+                        canvas_api.togglePOI(this.state.poi);
                 }}
                 />
              </div>
