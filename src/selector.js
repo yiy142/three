@@ -73,8 +73,10 @@ export default class MapSelector extends React.Component {
                                     }})
                                     .then(res => {
                                         canvas_api.reload(res.data);
-                                        //TODO, update poiNames, pass down to controller
-                                        this.state.poiNames = res.data.pois;
+                                        this.state.poiNames = Object.keys(res.data);
+
+                                        //Send back to upper level
+                                        this.props.getPoiNames(this.state.poiNames);
                                     });
                             })}
                             >
