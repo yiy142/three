@@ -51,7 +51,7 @@
     "react-circle": "^1.1.1",
     "react-tabs": "^3.0.0",
     "style-loader": "^0.23.1",
-    "three": "^0.101.0",
+    "three": "^0.137.0",
     "three-collada-loader": "0.0.1",
     "three-orbit-controls": "^82.1.0",
     "url-loader": "^1.1.2",
